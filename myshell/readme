@@ -1,0 +1,117 @@
+# My Shell
+# author: Internet's own boy
+# Operating Systems Internal - Assignment 1
+
+------------------------------ User Manual ------------------------------
+
+Usage: myshell [batch file] [ > output_file]
+
+Description
+Myshell as its name stands for, it's a simple shell that acts like a UNIX shell. it can executes 8 basic commands (dir, cd, pause, environ, echo, clr, help, and quit). it can also executes external commands. it can get the input from either a file or user's input.
+
+Built-in Commands
+
+1) cd - Change working directory
+   Usage: cd [directoryName]
+   Description:
+       It changes the current working directory to the given “directoryName”. If no argument is given then, it simply prints out the current directory to the standard output. If the given directory does not exist, it will print an error message and it shows the shell prompt again.
+
+2) clr - clear the screen
+   Usage: clr
+   Description:
+       It clears the screen and it prints out the prompt on first line of the standard output i.e screen. it doesn't take any arguments
+
+3) dir - list directory contents
+   Usage: dir [directoryName]
+   Description:
+       It lists the files and folders inside the “directoryName”. if “directoryName” is not given then, list the current directory contents. if “directoryName” does not exist, an error will be printed to the standard output i.e. screen and it will show the prompt again. it doesn't take any parameters, however if a parameter is given, it will be passed in to be interpreted. the reason is that it will take advantage of using 'ls' UNIX commands.
+4) environ - environment variables
+   Usage: environ
+   Description:
+       it displays all the environment variables to the screen. it doesn't take any arguments.
+5) echo  - display a line of text
+   Usage: echo [string]
+   Description:
+       it will display the given string or strings on the standard output. it only considers single space between each string and it ignores the multiple spaces
+6) help - display user manual
+   Usage: help
+   Description:
+       it displays the user manual(this document)to the user. user can scroll up or down through the document. the manual file is a text file saved in the same directory as the executable "myshell" program
+7) pause - pause the shell
+   Usage: pause
+   Description:
+       it freezes the shell, and it doesn't accept any one of previously mentioned commands; until user press the 'Enter' key. after that it shows the shell prompt again. it doesn't take any arguments
+8) quit - exit the shell
+   Usage: exit
+   Description:
+       it cause  "myshell" to exit, and it returns to the standard system shell prompt.
+
+External Commands Procedure
+user can enter a command outside of the built-in commands. in that case, the newly typed command will be  sent to the system and it will be executed by Operating System itself. the procedure to execute an external command is that, "myshell" create a child process, and pass the required arguments to the system to execute that command; that external command will remain child process of "myshell", and once it is executed, it will return to "myshell" again either with successful or failure outcome.
+
+I/O REDIRECTION
+There are always 3 default files open standard input or stdin(keyboard), standard output or stdout(screen), and standard error or stderr(usually screen as well). we can redirect these input and output from/to a file, command, program, script.
+these open files was assigned a fiel descriptor, 0,1,2 for stdin, stdout, and stderr respectively.
+we can have 3 types of redirection with > or >> or < in "myshell", however there are more. these 3 types are:
+    COAMMAND_OUTPUT > fileName: it writes the data into the given "fileName". if file exists, its content will be overwritten, if it doesn't exist it will created and new data will be written. all true if current user has the write privilege.
+    COAMMAND_OUTPUT >> fileName: it will append the data in the given "fileName". if file exist, new data will be appended to the previous content, if it doesn't exist it will be created and new data will be written. all true if current user has the write privilege.
+    COAMMAND_INPUT < fileName: it reads the data from the given "fileName". data can be used in another program as well.
+    Examples:
+        a) dir > output.txt: it writes the result of "dir" command to output.txt, and it overwrite the previous data inside the file. if file    doesn't exist, it will be created.
+        b) dir >> output.txt: it appends the result of "dir" command to the output.txt. if file doesn't exist, it will be created.
+         c) sort < input.txt > sorted.txt: it will get the data from "input.txt" file, and it sorts them, and then it will write the result to the "sorted.txt" file.
+basically, I/O redirection can be achieved in commands that print out the result to standard input or get their data from standard output. if a command doesn't support the redirection symbol, it just ignores it.
+More on I/O Redirection:
+in bcsh we have different format for redirection as well. we can use numbers 0,1, and 2 for IO redirection. for example:
+  1>fileName #redirect stdout to file "fileName"
+ 
+  ls > fileName 2>1 #redirect its output into "fileName" and redirect error to standard output.
+ 
+we can also use ampersand (&) symbol to redirect both stdout and stderr, for example:
+
+  ls &>fileName # redirect stdout and stderr of "ls" command to "fileName"  
+
+this is the same as following command:
+
+  ls >fileName 2>&1 # here number 1 refers to "fileName" not the screen, so both standard output and standard error will be redirected to "fileName"
+
+Environment
+Environment variable are a set of "name=value" information about the currently running system. behaviour of the system can be altered by changing the relevant variable. they can be changed by system, user, or any other programs. whenever we log in to the system, the shell initialize these environment variables. in "myshell", environment variables can be seen by invoking "environ" command. some of the known variables:
+    PWD - it has the value of the path to the current working directory.
+    HOME - indicates the home directory of the currently logged in user
+    LANGUAGE - it shows the currently configured language on the system.
+    PATH - it contains a list of paths. operating system will look in these paths whenever it want to execute an application. path list is a quite long list and each path is separated by : (colon).
+we can see the value of each variable by
+
+  echo ${variableName} for example echo $HOME
+
+Batch File Execution
+batch file contains a series of commands or jobs to be done sequentially by the shell. each command needs to be separated by newline character. after all the inputs has been executed by the shell, result will be shown on the screen or they can be redirected to another file using > or >> operators.
+example: $./myshell batchfile.txt
+
+Background Execution
+it means that we can send a process/script/command to background, so that we can execute other commands in foreground to increase effective utilization of system resources and to speed up the execution. This is also called as Child process creation or forking.
+to do that, you only need to append the ampersand (&) sign to end of the command in shell prompt.
+example:
+    $ping google.com&
+we can also send a currently running program, process, or job to background following these steps:
+   - use "CTRL+Z" which suspends the current foreground program, process, or job.
+   - issue 'bg' command that executes the suspended program, process, or job in background.
+ 
+to see all the background jobs use the following command:
+
+  jobs
+ 
+if you want to bring it to foreground the following command:
+
+  fg
+ 
+or if you want to kill or stop a background job use the following command:
+
+  kill
+ 
+Program Termination
+program can be terminated by pressing CTRL+C keys, which sends a signal (SIGINT) to the running program, and the process will be killed by the shell. don't use CTRL+Z combination, it just suspends the running program, and the program will stay in the memory, and it needs to be killed by user manually using kill command, or it can be resumed as well using "fg" command.
+ 
+
+
